@@ -1,0 +1,381 @@
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+   * De applicatie vult het scherm en regelt het schuiven zelf: alleen de
+   * hoofdkolom schuift. Breed materiaal (tabellen, code, formules) schuift
+   * binnen zijn eigen kader, nooit de pagina.
+   */
+  html,
+  body {
+    @apply h-full;
+    /*
+     * `clip` in plaats van `hidden`: bij `hidden` blijft de pagina programmatisch
+     * verschuifbaar, waardoor bijvoorbeeld focus op een element buiten beeld de
+     * navbalk permanent omhoog duwt. `clip` maakt er geen schuifgebied van.
+     */
+    overflow: clip;
+  }
+
+  body {
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   GitHub-achtige Markdown-opmaak bovenop @tailwindcss/typography.
+--------------------------------------------------------------------------- */
+@layer components {
+  .prose {
+    @apply text-[15px] leading-7;
+  }
+
+  /* Elk direct kind moet mogen krimpen, anders rekt een brede tabel of code
+     de pagina op in plaats van zelf te schuiven. */
+  .prose > * {
+    @apply min-w-0;
+  }
+
+  /*
+   * Onze eigen componenten dragen `not-prose`. Net als de typography-plug-in
+   * sluiten de regels hieronder die uit, zodat een component zijn eigen randen,
+   * achtergrond en padding houdt.
+   */
+  .prose :where(h1, h2):not(:where(.not-prose, .not-prose *)) {
+    @apply border-b border-gray-200 pb-2 dark:border-gray-800;
+  }
+
+  .prose :where(code):not(:where(pre code, .not-prose, .not-prose *)) {
+    @apply rounded bg-gray-100 px-1 py-0.5 font-mono text-[85%] font-normal text-gray-800
+           before:content-none after:content-none dark:bg-gray-800 dark:text-gray-200;
+  }
+
+  .prose :where(pre):not(:where(.not-prose, .not-prose *)) {
+    @apply overflow-x-auto rounded-md border border-gray-200 bg-gray-50 p-4 text-[13px]
+           text-gray-800 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-200;
+  }
+
+  .prose :where(blockquote):not(:where(.not-prose, .not-prose *)) {
+    @apply border-l-4 border-gray-300 not-italic text-gray-600 dark:border-gray-600 dark:text-gray-400;
+  }
+
+  .prose blockquote p:first-of-type::before,
+  .prose blockquote p:last-of-type::after {
+    content: none;
+  }
+
+  .prose :where(table):not(:where(.not-prose, .not-prose *)) {
+    @apply block w-full overflow-x-auto text-sm;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .prose :where(thead th):not(:where(.not-prose, .not-prose *)) {
+    @apply whitespace-nowrap border border-gray-300 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/60;
+  }
+
+  .prose :where(tbody td):not(:where(.not-prose, .not-prose *)) {
+    @apply border border-gray-300 px-3 py-2 dark:border-gray-700;
+  }
+
+  .prose :where(hr):not(:where(.not-prose, .not-prose *)) {
+    @apply border-gray-200 dark:border-gray-800;
+  }
+
+  .prose :where(a):not(:where(.not-prose, .not-prose *)) {
+    @apply text-blue-600 no-underline hover:underline dark:text-blue-400;
+  }
+
+  .prose :where(img):not(:where(.not-prose, .not-prose *)) {
+    @apply rounded-md border border-gray-200 dark:border-gray-800;
+  }
+
+  .prose li.task-list-item {
+    @apply -ml-5 list-none;
+  }
+
+  .prose .task-checkbox {
+    @apply mr-1 h-4 w-4 align-middle accent-blue-600;
+  }
+
+  /* Onze Vue-blokken staan in .prose maar brengen hun eigen ruimte mee. */
+  .prose .doc-block {
+    @apply my-6;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Wiskunde. KaTeX levert zijn eigen uitlijning; hier alleen wat het in deze
+   pagina nodig heeft. Belangrijk: de KaTeX-CSS en de KaTeX die de HTML maakt
+   moeten dezelfde versie zijn, anders vallen exponenten en breuken uit elkaar.
+--------------------------------------------------------------------------- */
+
+/* Preflight zet box-sizing: border-box op alles; KaTeX rekent in content-box. */
+.katex,
+.katex * {
+  box-sizing: content-box;
+}
+
+/* KaTeX staat standaard op 1.21em; iets rustiger naast 15px-tekst. */
+.katex {
+  font-size: 1.1em;
+}
+
+/* Blokformules: gecentreerd (door KaTeX zelf), en schuiven binnen hun eigen
+   kader in plaats van de pagina mee te trekken. */
+.katex-display {
+  @apply my-5 overflow-x-auto overflow-y-hidden py-1;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  max-width: 100%;
+}
+
+/* Formules in een zin blijven in de regel staan en scheuren de regelhoogte niet op. */
+.prose :not(.katex-display) > .katex {
+  @apply align-baseline;
+}
+
+/* Een blokformule direct na een alinea hoeft geen dubbele witruimte. */
+.prose .katex-display:first-child {
+  @apply mt-0;
+}
+
+/* ---------------------------------------------------------------------------
+   Controls. Touch targets stay at least 44px tall on coarse pointers.
+--------------------------------------------------------------------------- */
+.doc-range {
+  @apply h-1.5 w-full cursor-pointer appearance-none rounded-full bg-gray-200 dark:bg-gray-700;
+  touch-action: pan-y;
+}
+
+.doc-range::-webkit-slider-thumb {
+  @apply h-5 w-5 appearance-none rounded-full border-2 border-white bg-blue-600 shadow dark:border-gray-900;
+}
+
+.doc-range::-moz-range-thumb {
+  @apply h-5 w-5 rounded-full border-2 border-white bg-blue-600 dark:border-gray-900;
+}
+
+@media (pointer: coarse) {
+  .doc-range {
+    @apply h-2;
+  }
+
+  .doc-range::-webkit-slider-thumb {
+    @apply h-6 w-6;
+  }
+
+  .doc-range::-moz-range-thumb {
+    @apply h-6 w-6;
+  }
+}
+
+.doc-input {
+  @apply w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-right font-mono text-sm
+         text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
+         dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100;
+  min-height: 40px;
+}
+
+/*
+ * Veld met vaste plekken voor een teken vóór ($) en ná (%) het getal. Beide
+ * plekken bestaan altijd, ook als ze leeg zijn: daardoor staan de getallen en
+ * de randen van alle velden onder elkaar, ongeacht hun eenheid.
+ */
+.doc-field {
+  @apply flex items-center rounded border border-gray-300 bg-white
+         focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500
+         dark:border-gray-600 dark:bg-gray-900;
+  min-height: 40px;
+}
+
+/* De eigen pijltjes vervangen die van de browser: die verschijnen pas bij
+   hover, zijn op een telefoon niet te raken en volgen het thema niet. */
+.doc-field input[type='number'],
+input.doc-input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.doc-field input[type='number']::-webkit-outer-spin-button,
+.doc-field input[type='number']::-webkit-inner-spin-button,
+input.doc-input[type='number']::-webkit-outer-spin-button,
+input.doc-input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.doc-stepper {
+  @apply flex shrink-0 flex-col self-stretch border-l border-gray-300 dark:border-gray-600;
+  width: 1.75rem;
+}
+
+.doc-stepper button {
+  @apply flex flex-1 items-center justify-center text-gray-500 transition-colors
+         hover:bg-gray-100 hover:text-gray-900 disabled:opacity-30 disabled:hover:bg-transparent
+         dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100;
+}
+
+.doc-stepper button:first-child {
+  @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+.doc-stepper svg {
+  @apply h-2.5 w-2.5;
+}
+
+@media (pointer: coarse) {
+  .doc-stepper {
+    width: 2.25rem;
+  }
+}
+
+/* Compacte variant voor in tabelcellen. */
+.doc-field-compact {
+  width: 7.5rem;
+}
+
+.doc-field-unit {
+  @apply w-6 shrink-0 text-center text-sm text-gray-500 dark:text-gray-400;
+}
+
+.doc-field input {
+  @apply min-w-0 flex-1 border-0 bg-transparent px-1 py-1.5 text-right font-mono text-sm
+         text-gray-900 focus:outline-none dark:text-gray-100;
+}
+
+.doc-button {
+  @apply inline-flex items-center justify-center rounded border border-gray-300 px-2.5 py-1.5 text-xs
+         font-medium text-gray-600 transition-colors hover:bg-gray-50
+         dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700;
+  min-height: 36px;
+}
+
+@media (pointer: coarse) {
+  .doc-button {
+    min-height: 44px;
+    @apply px-3;
+  }
+}
+
+/*
+ * Nadrukkelijke knop. Staat bewust ná .doc-button: die zet een eigen tekstkleur
+ * en zou anders het `text-white` van de utility overrulen.
+ */
+.doc-button-primary {
+  @apply border-blue-600 bg-blue-600 text-white hover:bg-blue-700 hover:text-white
+         disabled:opacity-60 dark:border-blue-500 dark:bg-blue-600 dark:text-white
+         dark:hover:bg-blue-700 dark:hover:text-white;
+}
+
+/* A scroll box that stays obvious on touch, where scrollbars are hidden. */
+.doc-scroll-x {
+  /* overflow-y expliciet dicht: anders maakt overflow-x:auto ook een
+     verticale schuifbalk zichtbaar bij een paar pixels speling. */
+  @apply overflow-x-auto overflow-y-hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.doc-scroll-x::-webkit-scrollbar {
+  height: 10px;
+}
+
+.doc-scroll-x::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-gray-300 dark:bg-gray-600;
+}
+
+.doc-scroll-x::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+@media (pointer: coarse) {
+  .doc-scroll-x::-webkit-scrollbar {
+    height: 12px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   highlight.js-thema (GitHub licht / donker).
+--------------------------------------------------------------------------- */
+.hljs { color: #24292f; }
+.hljs-comment, .hljs-quote { color: #6e7781; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-type { color: #cf222e; }
+.hljs-string, .hljs-regexp, .hljs-addition { color: #0a3069; }
+.hljs-number, .hljs-variable, .hljs-template-variable, .hljs-attr, .hljs-attribute { color: #0550ae; }
+.hljs-title, .hljs-title.function_, .hljs-section, .hljs-name { color: #8250df; }
+.hljs-built_in, .hljs-symbol, .hljs-bullet { color: #953800; }
+.hljs-meta { color: #116329; }
+.hljs-deletion { color: #82071e; }
+
+.dark .hljs { color: #c9d1d9; }
+.dark .hljs-comment, .dark .hljs-quote { color: #8b949e; }
+.dark .hljs-keyword, .dark .hljs-selector-tag, .dark .hljs-literal, .dark .hljs-type { color: #ff7b72; }
+.dark .hljs-string, .dark .hljs-regexp, .dark .hljs-addition { color: #a5d6ff; }
+.dark .hljs-number, .dark .hljs-variable, .dark .hljs-template-variable, .dark .hljs-attr, .dark .hljs-attribute { color: #79c0ff; }
+.dark .hljs-title, .dark .hljs-title.function_, .dark .hljs-section, .dark .hljs-name { color: #d2a8ff; }
+.dark .hljs-built_in, .dark .hljs-symbol, .dark .hljs-bullet { color: #ffa657; }
+.dark .hljs-meta { color: #7ee787; }
+.dark .hljs-deletion { color: #ffdcd7; }
+
+/* ---------------------------------------------------------------------------
+   Schuifbalken: subtiel, dun, en in beide thema's passend.
+--------------------------------------------------------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark * {
+  scrollbar-color: #3f4a5a transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+  background-clip: content-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #3f4a5a;
+  background-clip: content-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #55627a;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Plakkende kolommen (zijbalk en inhoudsopgave) schuiven zelfstandig. */
+/*
+ * Elk paneel (zijbalk, hoofdkolom, inhoudsopgave) schuift zelfstandig. De
+ * schuifbalk verschijnt alleen als de inhoud niet past, en schuiven slaat niet
+ * over op de kolom erachter.
+ */
+.doc-pane {
+  overscroll-behavior: contain;
+}
