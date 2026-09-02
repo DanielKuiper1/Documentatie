@@ -6,18 +6,16 @@ item in de zijbalk. Er is geen routetabel en geen zijbalkconfiguratie.
 
 ## Wat staat hier
 
-- [Installatie](./aan-de-slag/installatie.md) — de site lokaal draaien.
-- [Configuratie](./aan-de-slag/configuratie.md) — de paar knoppen die er zijn.
-- [Basis](./handleidingen/basis.md) — welke Markdown wordt ondersteund.
-- [Geavanceerd](./handleidingen/geavanceerd.md) — interactieve voorbeelden en tabellen.
-- [Lineaire regressie](./handleidingen/lineaire-regressie.md) — grafieken waarin je punten kunt slepen.
-- [Componenten](./componenten.md) — alle componenten met voorbeelden.
-- [Referentie](./referentie.md) — alle syntaxis op één pagina.
+- [Basis](./handleidingen/basis.md) welke Markdown wordt ondersteund.
+- [Geavanceerd](./handleidingen/geavanceerd.md) interactieve voorbeelden en tabellen.
+- [Lineaire regressie](./handleidingen/lineaire-regressie.md) grafieken waarin je punten kunt slepen.
+- [Componenten](./componenten.md) alle componenten met voorbeelden.
+- [Referentie](./referentie.md) alle syntaxis op één pagina.
 
 ## Een voorproefje
 
-Wiskunde staat gewoon in de zin — de oppervlakte van een cirkel is
-$A = \pi r^2$ — en als blok:
+Wiskunde staat gewoon in de zin de oppervlakte van een cirkel is
+$A = \pi r^2$ en als blok:
 
 $$
 x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
