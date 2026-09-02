@@ -19,12 +19,6 @@ regel` zijn. Links werken [intern](../referentie.md) en
 2. Tweede
 3. Derde
 
-Takenlijsten worden aankruisvakjes:
-
-- [x] Automatische routering
-- [x] Automatische zijbalk
-- [ ] Wat je hierna toevoegt
-
 ## Citaten
 
 > Documentatie is een brief die je aan jezelf in de toekomst schrijft.
