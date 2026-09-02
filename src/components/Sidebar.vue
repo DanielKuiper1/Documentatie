@@ -61,7 +61,7 @@ watch(
 <template>
   <nav aria-label="Documentatie" class="py-2 pl-2 pr-1">
     <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-      Docs
+      Documentatie
     </p>
     <ul class="space-y-0.5">
       <template v-for="node in tree" :key="node.path">
