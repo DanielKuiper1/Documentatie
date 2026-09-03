@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build && node pages-fallback.mjs",
     "preview": "vite preview",
-    "test": "node smoke.mjs"
+    "test": "node smoke.mjs",
+    "context": "node build-context.mjs"
   },
   "repository": {
     "type": "git",
