@@ -14,7 +14,9 @@ const docRoutes = pages.map((page) => ({
 const home = pages.find((page) => page.path === '/')
 
 const router = createRouter({
-  history: createWebHistory(),
+  // Dezelfde basis als `base` in vite.config.js (bij GitHub Pages
+  // bijvoorbeeld /documentatie/), anders herkent de router de startpagina niet.
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     ...docRoutes,
     ...(home ? [] : [{ path: '/', redirect: pages[0]?.path || '/404' }]),

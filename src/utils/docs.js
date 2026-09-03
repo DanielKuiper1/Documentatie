@@ -118,7 +118,16 @@ export function buildTree() {
         return a.title.localeCompare(b.title)
       })
 
-  return materialize(root)
+  const entries = materialize(root)
+
+  // Is de startpagina het enige document? Dan zou de zijbalk leeg blijven; toon
+  // hem dan wel, zodat er geen kale kolom overblijft.
+  if (!entries.length) {
+    const home = pages.find((page) => page.path === '/')
+    if (home) return [{ type: 'page', name: 'index', title: home.title, path: '/', order: 0 }]
+  }
+
+  return entries
 }
 
 export const tree = buildTree()
